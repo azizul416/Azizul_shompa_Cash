@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>আজিজুল শম্পা হিসাব টেবিল</title>
+    <!-- বাংলা ফন্ট (Hind Siliguri) এবং আইকন (FontAwesome) -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background-color: #dce4ee;
+            margin: 0;
+            padding: 4px;
+            color: #1e293b;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        /* মোবাইল স্ক্রিন ফ্রেম */
+        .app-wrapper {
+            width: 100%;
+            max-width: 480px;
+            background: linear-gradient(180deg, #f2f6fb 0%, #e6eef7 100%);
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(15, 23, 42, 0.22);
+            overflow: hidden;
+            border: 1px solid #cbd5e1;
+        }
+
+        /* ১. হেডার ব্যানার */
+        .top-banner {
+            background: radial-gradient(circle at 50% 20%, #1d4ed8 0%, #0f296e 70%, #08153d 100%);
+            position: relative;
+            padding: 6px 10px;
+            color: white;
+            border-bottom: 2px solid #facc15;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4px;
+        }
+
+        /* ২. নেভিগেশন বার */
+        .nav-bar {
+            background: #ffffff;
+            padding: 4px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e2e8f0;
+            gap: 3px;
+        }
+
+        .nav-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 2.5px 6px;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 10px;
+            color: #1e3a8a;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .nav-item.active {
+            background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            box-shadow: 0 1px 3px rgba(29, 78, 216, 0.3);
+        }
+        .nav-item.active i {
+            color: white !important;
+        }
+
+        .btn-print {
+            background: linear-gradient(180deg, #22c55e 0%, #15803d 100%);
+            color: white;
+            padding: 2.5px 8px;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 9.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+        }
+
+        .main-content {
+            padding: 5px 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        /* ৩. উপরের ৪টি সামারি কার্ড সবসময় ১ লাইনে */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+        }
+
+        .stat-card {
+            border-radius: 6px;
+            padding: 4px 5px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.12);
+            border: 1px solid rgba(255,255,255,0.25);
+            min-width: 0;
+        }
+
+        .card-cash { background: linear-gradient(135deg, #22c55e 0%, #15803d 100%); }
+        .card-loan { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); }
+        .card-deposit { background: linear-gradient(135deg, #a855f7 0%, #6b21a8 100%); }
+        .card-repay { background: linear-gradient(135deg, #fb923c 0%, #ea580c 100%); }
+
+        .stat-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            flex-shrink: 0;
+        }
+
+        .stat-label { font-size: 8.5px; line-height: 1.1; opacity: 0.95; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .stat-value { font-size: 10px; font-weight: 700; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* ৪. ইনপুট ফর্ম সেকশন ১ লাইনে ২টি ফর্ম */
+        .forms-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 5px;
+        }
+
+        .box-card {
+            background: #ffffff;
+            border-radius: 6px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            overflow: hidden;
+            border: 1px solid #cbd5e1;
+        }
+
+        .box-header-green {
+            background: linear-gradient(90deg, #15803d 0%, #22c55e 100%);
+            color: white;
+            padding: 3px 6px;
+            font-weight: 700;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .box-header-purple {
+            background: linear-gradient(90deg, #581c87 0%, #7e22ce 100%);
+            color: white;
+            padding: 3px 6px;
+            font-weight: 700;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .form-input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3px;
+            margin-bottom: 4px;
+        }
+
+        .form-desc-row {
+            margin-bottom: 4px;
+        }
+
+        .mini-label {
+            display: block;
+            font-size: 8.5px;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 1px;
+            white-space: nowrap;
+        }
+
+        .mini-input {
+            width: 100%;
+            padding: 2.5px 4px;
+            font-size: 9px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            background: #ffffff;
+            outline: none;
+        }
+        .mini-input:focus { border-color: #2563eb; }
+
+        .btn-save-green {
+            background: linear-gradient(180deg, #22c55e 0%, #15803d 100%);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 9px;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+        }
+
+        .btn-save-purple {
+            background: linear-gradient(180deg, #7e22ce 0%, #581c87 100%);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 9px;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+        }
+
+        /* ৫ ও ৬. ডাটা টেবিল */
+        .table-controls {
+            padding: 2.5px 6px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 8.5px;
+        }
+
+        .table-scroll-box {
+            max-height: 76px;
+            overflow-y: auto;
+        }
+
+        table.custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9.5px;
+            table-layout: fixed;
+        }
+
+        table.custom-table th, table.custom-table td {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 2.5px 4px;
+            text-align: center;
+        }
+
+        table.custom-table th {
+            font-weight: 700;
+            border-bottom: 1px solid #cbd5e1;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        .th-green th { background-color: #dcfce7; color: #14532d; }
+        .th-purple th { background-color: #ede9fe; color: #3b0764; }
+
+        table.custom-table td {
+            border-bottom: 1px solid #f1f5f9;
+            color: #1e293b;
+            font-weight: 500;
+        }
+
+        .btn-icon-edit, .btn-icon-del {
+            color: white;
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            cursor: pointer;
+        }
+        .btn-icon-edit { background: #2563eb; }
+        .btn-icon-del { background: #ef4444; }
+
+        .table-footer {
+            padding: 2px 6px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 9px;
+            color: #475569;
+        }
+
+        /* ৭. নিচের অংশ ১ লাইনে ২টি বক্স */
+        .bottom-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 5px;
+        }
+
+        .summary-header-blue {
+            background: linear-gradient(90deg, #1d4ed8 0%, #3b82f6 100%);
+            color: white;
+            padding: 3px 6px;
+            font-weight: 700;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .sum-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5px 5px;
+            background: #f8fafc;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+            font-size: 9.5px;
+        }
+
+        .quick-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            padding: 4px 3px;
+            border-radius: 5px;
+            font-weight: 700;
+            font-size: 8.5px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        /* ৮. ফুটার বার */
+        .app-footer {
+            background: linear-gradient(90deg, #08153d 0%, #1e3a8a 50%, #08153d 100%);
+            color: #e2e8f0;
+            padding: 4px 8px;
+            font-size: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 2px solid #facc15;
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .app-wrapper { box-shadow: none; border: none; max-width: 100%; }
+            .no-print { display: none !important; }
+            .table-scroll-box { max-height: none; overflow: visible; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-wrapper" id="mainApp">
+
+    <!-- ১. টপ হেডার ব্যানার -->
+    <header class="top-banner">
+        <div class="shrink-0 relative z-10">
+            <svg width="34" height="30" viewBox="0 0 100 90" fill="none">
+                <rect x="12" y="12" width="46" height="60" rx="5" fill="#f8fafc" transform="rotate(-12 12 12)" stroke="#cbd5e1" stroke-width="2"/>
+                <line x1="20" y1="24" x2="46" y2="18" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
+                <line x1="22" y1="34" x2="48" y2="28" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
+                <rect x="44" y="22" width="42" height="54" rx="6" fill="#334155" stroke="#f8fafc" stroke-width="2"/>
+                <rect x="50" y="28" width="30" height="12" rx="2" fill="#86efac"/>
+                <circle cx="54" cy="48" r="3" fill="#e2e8f0"/><circle cx="65" cy="48" r="3" fill="#e2e8f0"/><circle cx="76" cy="48" r="3" fill="#facc15"/>
+            </svg>
+        </div>
+
+        <div class="text-center flex-1 relative z-10">
+            <h1 class="text-xs sm:text-sm font-bold tracking-wide leading-tight">
+                <span class="text-white">আজিজুল শম্পা</span>
+                <span class="text-yellow-300">হিসাব টেবিল</span>
+            </h1>
+            <div class="inline-block bg-blue-700/85 border border-blue-400/50 text-blue-50 text-[8.5px] px-2 py-0 rounded-full font-medium mt-0.5">
+                সঠিক হিসাব, শান্তির জীবন
+            </div>
+        </div>
+
+        <div class="text-right text-[8.5px] bg-blue-950/60 px-1.5 py-0.5 rounded border border-blue-400/30 shrink-0 leading-tight">
+            <div class="text-blue-200">আজকের তারিখ</div>
+            <div id="headerDateDisplay" class="font-bold text-white">--</div>
+            <div id="headerDayDisplay" class="text-yellow-300 font-semibold text-[8px]">--</div>
+        </div>
+    </header>
+
+    <!-- ২. নেভিগেশন মেনু বার -->
+    <nav class="nav-bar no-print">
+        <div class="flex items-center gap-1 overflow-x-auto">
+            <button onclick="switchTab('home')" id="tab-home" class="nav-item active">
+                <i class="fa-solid fa-house"></i> হোম
+            </button>
+            <button onclick="switchTab('transactions')" id="tab-transactions" class="nav-item">
+                <i class="fa-solid fa-list-check text-blue-600"></i> লেনদেন তালিকা
+            </button>
+            <button onclick="switchTab('report')" id="tab-report" class="nav-item">
+                <i class="fa-solid fa-chart-column text-blue-600"></i> রিপোর্ট
+            </button>
+            <button onclick="openSettingsModal()" id="tab-settings" class="nav-item">
+                <i class="fa-solid fa-gear text-blue-600"></i> সেটিংস
+            </button>
+        </div>
+
+        <button onclick="handlePrintOrDownload()" class="btn-print shrink-0">
+            <i class="fa-solid fa-download"></i> প্রিন্ট/ডাউনলোড
+        </button>
+    </nav>
+
+    <!-- মূল কন্টেন্ট -->
+    <main class="main-content">
+
+        <!-- ৩. মূল ৪টি হিসাব কার্ড এক লাইনে -->
+        <section class="stats-row">
+            <div class="stat-card card-cash cursor-pointer" onclick="openSettingsModal()" title="ক্লিক করে ক্যাশ সেট করুন">
+                <div class="stat-icon">💰</div>
+                <div class="min-w-0">
+                    <div class="stat-label">মোট ক্যাশ</div>
+                    <div class="stat-value" id="topTotalCash">৳ ০</div>
+                </div>
+            </div>
+
+            <div class="stat-card card-loan cursor-pointer" onclick="openSettingsModal()" title="ক্লিক করে ধার সেট করুন">
+                <div class="stat-icon">🤝</div>
+                <div class="min-w-0">
+                    <div class="stat-label">মোট ধার</div>
+                    <div class="stat-value" id="topTotalLoan">৳ ০</div>
+                </div>
+            </div>
+
+            <div class="stat-card card-deposit">
+                <div class="stat-icon">👛</div>
+                <div class="min-w-0">
+                    <div class="stat-label">মোট জমা</div>
+                    <div class="stat-value" id="topTotalDeposit">৳ ০</div>
+                </div>
+            </div>
+
+            <div class="stat-card card-repay">
+                <div class="stat-icon">
+                    <i class="fa-solid fa-circle-check text-green-500 bg-white rounded-full"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="stat-label">মোট পরিশোধ</div>
+                    <div class="stat-value" id="topTotalRepay">৳ ০</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ৪. ইনপুট ফর্ম সেকশন (১ লাইনে ২টি ফর্ম) -->
+        <section class="forms-row no-print" id="formsSection">
+            <!-- বাম ফর্ম: জমা -->
+            <div class="box-card">
+                <div class="box-header-green">
+                    <span><i class="fa-solid fa-circle-plus mr-1"></i>টাকা যোগ করুন (জমা)</span>
+                </div>
+                <form onsubmit="handleAddDeposit(event)" class="p-1.5 bg-green-50/50">
+                    <input type="hidden" id="depositEditId" value="">
+                    <div class="form-input-grid">
+                        <div>
+                            <label class="mini-label">পরিমাণ (৳)</label>
+                            <input type="number" id="depositAmount" placeholder="টাকা" required min="1" class="mini-input">
+                        </div>
+                        <div>
+                            <label class="mini-label">তারিখ</label>
+                            <input type="date" id="depositDate" required class="mini-input">
+                        </div>
+                    </div>
+                    <div class="form-desc-row">
+                        <input type="text" id="depositDesc" placeholder="বিবরণ লিখুন (যেমন: বেতন, উপহার)..." required class="mini-input">
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" id="depositSubmitBtn" class="btn-save-green">
+                            <i class="fa-solid fa-floppy-disk"></i> জমা সংরক্ষণ করুন
+                        </button>
+                        <button type="button" id="depositCancelEdit" onclick="cancelEdit('deposit')" class="hidden text-[8.5px] text-red-600 underline font-bold ml-1">বাতিল</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- ডান ফর্ম: ধার পরিশোধ -->
+            <div class="box-card">
+                <div class="box-header-purple">
+                    <span><i class="fa-solid fa-circle-minus mr-1"></i>ধার পরিশোধ করুন</span>
+                </div>
+                <form onsubmit="handleAddRepay(event)" class="p-1.5 bg-purple-50/50">
+                    <input type="hidden" id="repayEditId" value="">
+                    <div class="form-input-grid">
+                        <div>
+                            <label class="mini-label">পরিমাণ (৳)</label>
+                            <input type="number" id="repayAmount" placeholder="টাকা" required min="1" class="mini-input">
+                        </div>
+                        <div>
+                            <label class="mini-label">তারিখ</label>
+                            <input type="date" id="repayDate" required class="mini-input">
+                        </div>
+                    </div>
+                    <div class="form-desc-row">
+                        <input type="text" id="repayDesc" placeholder="বিবরণ লিখুন (যেমন: ধার শোধ)..." required class="mini-input">
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" id="repaySubmitBtn" class="btn-save-purple">
+                            <i class="fa-solid fa-circle-check"></i> পরিশোধ সংরক্ষণ করুন
+                        </button>
+                        <button type="button" id="repayCancelEdit" onclick="cancelEdit('repay')" class="hidden text-[8.5px] text-red-600 underline font-bold ml-1">বাতিল</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- ৫. জমার টেবিল -->
+        <section class="box-card" id="depositTableSection">
+            <div class="box-header-green">
+                <span>🪙 জমার হিসাব (ক্যাশ বৃদ্ধি)</span>
+                <span class="bg-white text-green-900 font-bold text-[9px] px-2 py-0.2 rounded shadow-sm" id="tableDepositTotal">মোট জমা: ৳ ০</span>
+            </div>
+
+            <div class="table-controls no-print">
+                <div class="flex items-center gap-1 text-slate-600">
+                    <span>Show</span>
+                    <select id="depositLimit" onchange="renderTables()" class="border border-slate-300 rounded px-1 py-0 bg-white">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                    </select>
+                </div>
+                <div class="relative">
+                    <input type="text" id="depositSearch" onkeyup="renderTables()" placeholder="খুঁজুন..."
+                        class="px-2 py-0.5 border border-slate-300 rounded bg-white w-28 outline-none focus:border-green-600 text-[9px]">
+                </div>
+            </div>
+
+            <div class="table-scroll-box">
+                <table class="custom-table">
+                    <thead class="th-green">
+                        <tr>
+                            <th style="width: 14%;">ক্রমিক</th>
+                            <th style="width: 24%;">তারিখ</th>
+                            <th style="width: 24%;">পরিমাণ (৳)</th>
+                            <th style="width: 23%;">বিবরণ</th>
+                            <th style="width: 15%;" class="no-print">কার্যক্রম</th>
+                        </tr>
+                    </thead>
+                    <tbody id="depositTableBody"></tbody>
+                </table>
+            </div>
+
+            <div class="table-footer">
+                <div id="depositEntryCount" class="font-semibold">মোট: ০টি এন্ট্রি</div>
+            </div>
+        </section>
+
+        <!-- ৬. ধার পরিশোধের টেবিল -->
+        <section class="box-card" id="repayTableSection">
+            <div class="box-header-purple">
+                <span>🤝 ধার পরিশোধের হিসাব</span>
+                <span class="bg-white text-purple-900 font-bold text-[9px] px-2 py-0.2 rounded shadow-sm" id="tableRepayTotal">মোট পরিশোধ: ৳ ০</span>
+            </div>
+
+            <div class="table-controls no-print">
+                <div class="flex items-center gap-1 text-slate-600">
+                    <span>Show</span>
+                    <select id="repayLimit" onchange="renderTables()" class="border border-slate-300 rounded px-1 py-0 bg-white">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                    </select>
+                </div>
+                <div class="relative">
+                    <input type="text" id="repaySearch" onkeyup="renderTables()" placeholder="খুঁজুন..."
+                        class="px-2 py-0.5 border border-slate-300 rounded bg-white w-28 outline-none focus:border-purple-600 text-[9px]">
+                </div>
+            </div>
+
+            <div class="table-scroll-box">
+                <table class="custom-table">
+                    <thead class="th-purple">
+                        <tr>
+                            <th style="width: 14%;">ক্রমিক</th>
+                            <th style="width: 24%;">তারিখ</th>
+                            <th style="width: 24%;">পরিমাণ (৳)</th>
+                            <th style="width: 23%;">বিবরণ</th>
+                            <th style="width: 15%;" class="no-print">কার্যক্রম</th>
+                        </tr>
+                    </thead>
+                    <tbody id="repayTableBody"></tbody>
+                </table>
+            </div>
+
+            <div class="table-footer">
+                <div id="repayEntryCount" class="font-semibold">মোট: ০টি এন্ট্রি</div>
+            </div>
+        </section>
+
+        <!-- ৭. সারসংক্ষেপ ও দ্রুত অ্যাকশন -->
+        <section class="bottom-row" id="bottomSummarySection">
+            <div class="box-card">
+                <div class="summary-header-blue">
+                    <i class="fa-solid fa-chart-simple"></i>
+                    <span>সারসংক্ষেপ রিপোর্ট</span>
+                </div>
+                <div class="p-1.5 space-y-1">
+                    <div class="sum-item">
+                        <span>💰 মোট ক্যাশ</span>
+                        <span class="font-bold" id="sumCash">৳ ০</span>
+                    </div>
+                    <div class="sum-item">
+                        <span>🤝 মোট ধার</span>
+                        <span class="font-bold" id="sumLoan">৳ ০</span>
+                    </div>
+                    <div class="sum-item">
+                        <span>🪙 মোট জমা</span>
+                        <span class="font-bold" id="sumDeposit">৳ ০</span>
+                    </div>
+                    <div class="sum-item">
+                        <span>✓ মোট পরিশোধ</span>
+                        <span class="font-bold" id="sumRepay">৳ ০</span>
+                    </div>
+                    <div class="flex items-center justify-between p-1 bg-amber-50 border border-amber-300 rounded text-[9.5px]">
+                        <span class="font-bold">⚖️ নিট ব্যালেন্স</span>
+                        <span class="font-extrabold text-green-700" id="netBalance">৳ ০</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col justify-between gap-1">
+                <div class="box-card flex-1">
+                    <div class="box-header-green">
+                        <span><i class="fa-solid fa-users"></i> দ্রুত অ্যাকশন</span>
+                    </div>
+                    <div class="p-1.5 grid grid-cols-2 gap-1">
+                        <button onclick="focusInput('depositAmount')" class="quick-btn bg-emerald-100 text-emerald-900 border border-emerald-300">
+                            + নতুন জমা যোগ করুন
+                        </button>
+                        <button onclick="focusInput('repayAmount')" class="quick-btn bg-purple-100 text-purple-900 border border-purple-300">
+                            − ধার পরিশোধ করুন
+                        </button>
+                        <button onclick="switchTab('transactions')" class="quick-btn bg-blue-100 text-blue-900 border border-blue-300">
+                            সম্পূর্ণ হিসাব দেখুন
+                        </button>
+                        <button onclick="showMonthlySummaryModal()" class="quick-btn bg-indigo-100 text-indigo-900 border border-indigo-300">
+                            মাসিক রিপোর্ট
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-amber-50 border border-amber-300 rounded py-1 px-1.5 text-center shadow-sm">
+                    <span class="font-bold text-slate-800 text-[8.5px]">💡 সঠিক হিসাব রাখুন, স্বাচ্ছন্দ্যে থাকুন!</span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ৮. ফুটার বার -->
+    <footer class="app-footer">
+        <div class="truncate">
+            <span class="font-bold text-white">আজিজুল শম্পা হিসাব</span>
+            <span class="text-blue-300">•</span>
+            <span id="footerLastUpdate" class="text-blue-200">--</span>
+        </div>
+        <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center text-[8px] no-print">
+            <i class="fa-solid fa-chevron-up"></i>
+        </button>
+    </footer>
+
+</div>
+
+<!-- মোডাল -->
+<div id="customModal" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-50 p-3">
+    <div class="bg-white rounded-lg max-w-xs w-full shadow-2xl border border-slate-200 overflow-hidden">
+        <div class="bg-blue-700 text-white px-3 py-1.5 flex items-center justify-between">
+            <h3 id="modalTitle" class="font-bold text-xs">সেটিংস</h3>
+            <button onclick="closeModal()" class="text-white"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="modalBody" class="p-3 text-xs text-slate-700"></div>
+    </div>
+</div>
+
+<script>
+    const STORAGE_KEY = 'azizul_shompa_data_v3';
+    let memoryFallback = { baseCash: 0, initialLoan: 0, deposits: [], repayments: [] };
+
+    function loadFromStorage() {
+        try {
+            const raw = window.localStorage.getItem(STORAGE_KEY) || window.localStorage.getItem('azizul_shompa_data_v2');
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (parsed && typeof parsed === 'object') {
+                    memoryFallback = {
+                        baseCash: Number(parsed.baseCash) || 0,
+                        initialLoan: Number(parsed.initialLoan) || 0,
+                        deposits: Array.isArray(parsed.deposits) ? parsed.deposits : [],
+                        repayments: Array.isArray(parsed.repayments) ? parsed.repayments : []
+                    };
+                }
+            }
+        } catch (err) {
+            console.warn('Storage read fallback active');
+        }
+        return memoryFallback;
+    }
+
+    let appState = loadFromStorage();
+
+    window.onload = function () {
+        updateLiveDateTime();
+        setInterval(updateLiveDateTime, 10000);
+        setTodayDates();
+        updateAllCalculations();
+    };
+
+    function saveToStorage() {
+        memoryFallback = JSON.parse(JSON.stringify(appState));
+        try {
+            window.localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+        } catch (err) {
+            console.warn('Storage write fallback active');
+        }
+    }
+
+    function updateLiveDateTime() {
+        const now = new Date();
+        const bnMonths = ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
+        const bnDays = ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'];
+
+        const dayNum = toBanglaDigit(String(now.getDate()).padStart(2, '0'));
+        const monthName = bnMonths[now.getMonth()];
+        const yearNum = toBanglaDigit(now.getFullYear());
+        const dayName = bnDays[now.getDay()];
+
+        let hours = now.getHours();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12;
+        const mins = toBanglaDigit(String(now.getMinutes()).padStart(2, '0'));
+        const timeStr = `${toBanglaDigit(String(hours).padStart(2, '0'))}:${mins} ${ampm}`;
+
+        const dateEl = document.getElementById('headerDateDisplay');
+        const dayEl = document.getElementById('headerDayDisplay');
+        const footerEl = document.getElementById('footerLastUpdate');
+
+        if (dateEl) dateEl.innerText = `${dayNum} ${monthName} ${yearNum}`;
+        if (dayEl) dayEl.innerText = `${dayName} • ${timeStr}`;
+        if (footerEl) footerEl.innerText = `সর্বশেষ আপডেট: ${dayNum} ${monthName} ${yearNum}, ${dayName}`;
+    }
+
+    function handlePrintOrDownload() {
+        const totalDeposit = appState.deposits.reduce((sum, item) => sum + Number(item.amount), 0);
+        const totalRepay = appState.repayments.reduce((sum, item) => sum + Number(item.amount), 0);
+        const currentTotalCash = appState.baseCash + totalDeposit;
+        const remainingLoan = Math.max(0, appState.initialLoan - totalRepay);
+        const netBalance = (currentTotalCash + totalDeposit) - remainingLoan;
+
+        const dateText = document.getElementById('headerDateDisplay').innerText;
+        const dayText = document.getElementById('headerDayDisplay').innerText;
+
+        const pdfContainer = document.createElement('div');
+        pdfContainer.style.padding = '16px';
+        pdfContainer.style.fontFamily = "'Hind Siliguri', sans-serif";
+        pdfContainer.style.color = '#1e293b';
+        pdfContainer.style.background = '#ffffff';
+        pdfContainer.innerHTML = `
+            <div style="text-align:center; border-bottom: 2px solid #1d4ed8; padding-bottom: 8px; margin-bottom: 12px;">
+                <h2 style="margin:0; color:#1d4ed8; font-size:18px;">আজিজুল শম্পা হিসাব টেবিল</h2>
+                <p style="margin:2px 0 0; font-size:11px; color:#475569;">তারিখ: ${dateText} | ${dayText}</p>
+            </div>
+            <table style="width:100%; border-collapse:collapse; margin-bottom:14px; font-size:11px;">
+                <tr>
+                    <td style="border:1px solid #cbd5e1; padding:6px; text-align:center; background:#f0fdf4;"><b>মোট ক্যাশ</b><br><span style="font-size:13px; color:#15803d;">৳ ${currentTotalCash.toLocaleString('en-US')}</span></td>
+                    <td style="border:1px solid #cbd5e1; padding:6px; text-align:center; background:#eff6ff;"><b>মোট ধার</b><br><span style="font-size:13px; color:#1d4ed8;">৳ ${remainingLoan.toLocaleString('en-US')}</span></td>
+                    <td style="border:1px solid #cbd5e1; padding:6px; text-align:center; background:#faf5ff;"><b>মোট জমা</b><br><span style="font-size:13px; color:#7e22ce;">৳ ${totalDeposit.toLocaleString('en-US')}</span></td>
+                    <td style="border:1px solid #cbd5e1; padding:6px; text-align:center; background:#fff7ed;"><b>মোট পরিশোধ</b><br><span style="font-size:13px; color:#ea580c;">৳ ${totalRepay.toLocaleString('en-US')}</span></td>
+                    <td style="border:1px solid #cbd5e1; padding:6px; text-align:center; background:#fefce8;"><b>নিট ব্যালেন্স</b><br><span style="font-size:13px; color:#15803d; font-weight:bold;">৳ ${netBalance.toLocaleString('en-US')}</span></td>
+                </tr>
+            </table>
+            <h4 style="margin:8px 0 4px; color:#15803d; font-size:12px;">জমার হিসাব তালিকা</h4>
+            <table style="width:100%; border-collapse:collapse; margin-bottom:12px; font-size:10px;">
+                <thead>
+                    <tr style="background:#dcfce7; color:#14532d;">
+                        <th style="border:1px solid #cbd5e1; padding:4px;">ক্রমিক</th>
+                        <th style="border:1px solid #cbd5e1; padding:4px;">তারিখ</th>
+                        <th style="border:1px solid #cbd5e1; padding:4px;">পরিমাণ (৳)</th>
+                        <th style="border:1px solid #cbd5e1; padding:4px;">বিবরণ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${appState.deposits.length ? appState.deposits.map((d, i) => `
+                        <tr>
+                            <td style="border:1px solid #cbd5e1; padding:4px; text-align:center;">${i + 1}</td>
+                            <td style="border:1px solid #cbd5e1; padding:4px; text-align:center;">${formatDateDisplay(d.date)}</td>
+                            <td style="border:1px solid #cbd5e1; padding:4px; text-align:center; font-weight:bold;">${Number(d.amount).toLocaleString('en-US')}</td>
+                            <td style="border:1px solid #cbd5e1; padding:4px; text-align:center;">${escapeHtml(d.desc)}</td>
+                        </tr>
+                    `).join('') : '<tr><td colspan="4" style="border:1px solid #cbd5e1; padding:5px; text-align:center; color:#64748b;">কোনো এন্ট্রি নেই</td></tr>'}
+                </tbody>
+            </table>
+            <h4 style="margin:8px 0 4px; color:#6b21a8; font-size:12px;">ধার পরিশোধের হিসাব তালিকা</h4>
+            <table style="width:100%; border-collapse:collapse; font-size:10px;">
+                <thead>
+                    <tr style="background:#ede9fe; color:#3b0764;">
+                        <th style="border:1px solid #cbd5e1; padding:4px;">ক্রমিক</th>
+                        <th style="border:1px solid #cbd5e1; padding:4px;">তারিখ</th>
+                        <th style="border:1px solid #cbd5e1; padding:4px;">পরিমাণ (৳)</th>
+                        <th style="border:1px solid #cbd5e1; padding:4px;">বিবরণ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${appState.repayments.length ? appState.repayments.map((r, i) => `
+                        <tr>
+                            <td style="border:1px solid #cbd5e1; padding:4px; text-align:center;">${i + 1}</td>
+                            <td style="border:1px solid #cbd5e1; padding:4px; text-align:center;">${formatDateDisplay(r.date)}</td>
+                            <td style="border:1px solid #cbd5e1; padding:4px; text-align:center; font-weight:bold;">${Number(r.amount).toLocaleString('en-US')}</td>
+                            <td style="border:1px solid #cbd5e1; padding:4px; text-align:center;">${escapeHtml(r.desc)}</td>
+                        </tr>
+                    `).join('') : '<tr><td colspan="4" style="border:1px solid #cbd5e1; padding:5px; text-align:center; color:#64748b;">কোনো এন্ট্রি নেই</td></tr>'}
+                </tbody>
+            </table>
+        `;
+
+        const fileName = `Azizul_Shompa_Hisab_${new Date().toISOString().slice(0, 10)}.pdf`;
+
+        if (typeof html2pdf !== 'undefined') {
+            const opt = {
+                margin: 8,
+                filename: fileName,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(pdfContainer).save();
+        } else {
+            window.print();
+        }
+    }
+
+    function setTodayDates() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('depositDate').value = today;
+        document.getElementById('repayDate').value = today;
+    }
+
+    function toBanglaDigit(num) {
+        const bnDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+        return num.toString().replace(/\d/g, d => bnDigits[d]);
+    }
+
+    function formatDateDisplay(isoDate) {
+        if (!isoDate) return '';
+        const parts = isoDate.split('-');
+        return parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : isoDate;
+    }
+
+    function formatMoney(amount) {
+        return '৳ ' + Number(amount).toLocaleString('en-US');
+    }
+
+    function updateAllCalculations() {
+        const totalDeposit = appState.deposits.reduce((sum, item) => sum + Number(item.amount), 0);
+        const totalRepay = appState.repayments.reduce((sum, item) => sum + Number(item.amount), 0);
+
+        const currentTotalCash = appState.baseCash + totalDeposit;
+        const remainingLoan = Math.max(0, appState.initialLoan - totalRepay);
+        const netBalance = (currentTotalCash + totalDeposit) - remainingLoan;
+
+        document.getElementById('topTotalCash').innerText = formatMoney(currentTotalCash);
+        document.getElementById('topTotalLoan').innerText = formatMoney(remainingLoan);
+        document.getElementById('topTotalDeposit').innerText = formatMoney(totalDeposit);
+        document.getElementById('topTotalRepay').innerText = formatMoney(totalRepay);
+
+        document.getElementById('tableDepositTotal').innerText = 'মোট জমা: ' + formatMoney(totalDeposit);
+        document.getElementById('tableRepayTotal').innerText = 'মোট পরিশোধ: ' + formatMoney(totalRepay);
+
+        document.getElementById('sumCash').innerText = formatMoney(currentTotalCash);
+        document.getElementById('sumLoan').innerText = formatMoney(remainingLoan);
+        document.getElementById('sumDeposit').innerText = formatMoney(totalDeposit);
+        document.getElementById('sumRepay').innerText = formatMoney(totalRepay);
+        document.getElementById('netBalance').innerText = formatMoney(netBalance);
+
+        renderTables();
+        saveToStorage();
+    }
+
+    function renderTables() {
+        const depSearch = document.getElementById('depositSearch').value.toLowerCase();
+        const depLimit = parseInt(document.getElementById('depositLimit').value);
+        const filteredDeposits = appState.deposits.filter(item =>
+            item.desc.toLowerCase().includes(depSearch) ||
+            formatDateDisplay(item.date).includes(depSearch) ||
+            item.amount.toString().includes(depSearch)
+        );
+
+        const depBody = document.getElementById('depositTableBody');
+        depBody.innerHTML = '';
+        const visibleDeposits = filteredDeposits.slice(0, depLimit);
+
+        if (visibleDeposits.length === 0) {
+            depBody.innerHTML = `<tr><td colspan="5" class="py-2 text-slate-400">কোনো এন্ট্রি নেই</td></tr>`;
+        } else {
+            visibleDeposits.forEach((item, index) => {
+                depBody.innerHTML += `
+                    <tr>
+                        <td class="font-bold">${index + 1}</td>
+                        <td>${formatDateDisplay(item.date)}</td>
+                        <td class="font-bold">${Number(item.amount).toLocaleString('en-US')}</td>
+                        <td>${escapeHtml(item.desc)}</td>
+                        <td class="no-print">
+                            <div class="flex items-center justify-center gap-1">
+                                <button onclick="editEntry('deposit', ${item.id})" class="btn-icon-edit"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="deleteEntry('deposit', ${item.id})" class="btn-icon-del"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+        document.getElementById('depositEntryCount').innerText = `মোট: ${toBanglaDigit(filteredDeposits.length)}টি এন্ট্রি`;
+
+        const repSearch = document.getElementById('repaySearch').value.toLowerCase();
+        const repLimit = parseInt(document.getElementById('repayLimit').value);
+        const filteredRepays = appState.repayments.filter(item =>
+            item.desc.toLowerCase().includes(repSearch) ||
+            formatDateDisplay(item.date).includes(repSearch) ||
+            item.amount.toString().includes(repSearch)
+        );
+
+        const repBody = document.getElementById('repayTableBody');
+        repBody.innerHTML = '';
+        const visibleRepays = filteredRepays.slice(0, repLimit);
+
+        if (visibleRepays.length === 0) {
+            repBody.innerHTML = `<tr><td colspan="5" class="py-2 text-slate-400">কোনো এন্ট্রি নেই</td></tr>`;
+        } else {
+            visibleRepays.forEach((item, index) => {
+                repBody.innerHTML += `
+                    <tr>
+                        <td class="font-bold">${index + 1}</td>
+                        <td>${formatDateDisplay(item.date)}</td>
+                        <td class="font-bold">${Number(item.amount).toLocaleString('en-US')}</td>
+                        <td>${escapeHtml(item.desc)}</td>
+                        <td class="no-print">
+                            <div class="flex items-center justify-center gap-1">
+                                <button onclick="editEntry('repay', ${item.id})" class="btn-icon-edit"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="deleteEntry('repay', ${item.id})" class="btn-icon-del"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+        document.getElementById('repayEntryCount').innerText = `মোট: ${toBanglaDigit(filteredRepays.length)}টি এন্ট্রি`;
+    }
+
+    function handleAddDeposit(e) {
+        e.preventDefault();
+        const editId = document.getElementById('depositEditId').value;
+        const amount = parseFloat(document.getElementById('depositAmount').value);
+        const date = document.getElementById('depositDate').value;
+        const desc = document.getElementById('depositDesc').value.trim();
+        if (!amount || amount <= 0 || !date || !desc) return;
+
+        if (editId) {
+            const idx = appState.deposits.findIndex(d => d.id == editId);
+            if (idx !== -1) appState.deposits[idx] = { id: Number(editId), date, amount, desc };
+            cancelEdit('deposit');
+        } else {
+            const newId = appState.deposits.length > 0 ? Math.max(...appState.deposits.map(d => d.id)) + 1 : 1;
+            appState.deposits.unshift({ id: newId, date, amount, desc });
+        }
+
+        document.getElementById('depositAmount').value = '';
+        document.getElementById('depositDesc').value = '';
+        updateAllCalculations();
+    }
+
+    function handleAddRepay(e) {
+        e.preventDefault();
+        const editId = document.getElementById('repayEditId').value;
+        const amount = parseFloat(document.getElementById('repayAmount').value);
+        const date = document.getElementById('repayDate').value;
+        const desc = document.getElementById('repayDesc').value.trim();
+        if (!amount || amount <= 0 || !date || !desc) return;
+
+        if (editId) {
+            const idx = appState.repayments.findIndex(r => r.id == editId);
+            if (idx !== -1) appState.repayments[idx] = { id: Number(editId), date, amount, desc };
+            cancelEdit('repay');
+        } else {
+            const newId = appState.repayments.length > 0 ? Math.max(...appState.repayments.map(r => r.id)) + 1 : 1;
+            appState.repayments.unshift({ id: newId, date, amount, desc });
+        }
+
+        document.getElementById('repayAmount').value = '';
+        document.getElementById('repayDesc').value = '';
+        updateAllCalculations();
+    }
+
+    function editEntry(type, id) {
+        if (type === 'deposit') {
+            const item = appState.deposits.find(d => d.id === id);
+            if (!item) return;
+            document.getElementById('depositEditId').value = item.id;
+            document.getElementById('depositAmount').value = item.amount;
+            document.getElementById('depositDate').value = item.date;
+            document.getElementById('depositDesc').value = item.desc;
+            document.getElementById('depositSubmitBtn').innerHTML = '<i class="fa-solid fa-check"></i> আপডেট';
+            document.getElementById('depositCancelEdit').classList.remove('hidden');
+        } else if (type === 'repay') {
+            const item = appState.repayments.find(r => r.id === id);
+            if (!item) return;
+            document.getElementById('repayEditId').value = item.id;
+            document.getElementById('repayAmount').value = item.amount;
+            document.getElementById('repayDate').value = item.date;
+            document.getElementById('repayDesc').value = item.desc;
+            document.getElementById('repaySubmitBtn').innerHTML = '<i class="fa-solid fa-check"></i> আপডেট';
+            document.getElementById('repayCancelEdit').classList.remove('hidden');
+        }
+    }
+
+    function cancelEdit(type) {
+        if (type === 'deposit') {
+            document.getElementById('depositEditId').value = '';
+            document.getElementById('depositAmount').value = '';
+            document.getElementById('depositDesc').value = '';
+            document.getElementById('depositSubmitBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> জমা সংরক্ষণ করুন';
+            document.getElementById('depositCancelEdit').classList.add('hidden');
+        } else if (type === 'repay') {
+            document.getElementById('repayEditId').value = '';
+            document.getElementById('repayAmount').value = '';
+            document.getElementById('repayDesc').value = '';
+            document.getElementById('repaySubmitBtn').innerHTML = '<i class="fa-solid fa-circle-check"></i> পরিশোধ সংরক্ষণ করুন';
+            document.getElementById('repayCancelEdit').classList.add('hidden');
+        }
+    }
+
+    function deleteEntry(type, id) {
+        if (type === 'deposit') {
+            appState.deposits = appState.deposits.filter(d => d.id !== id);
+        } else if (type === 'repay') {
+            appState.repayments = appState.repayments.filter(r => r.id !== id);
+        }
+        updateAllCalculations();
+    }
+
+    function switchTab(tabName) {
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        const activeBtn = document.getElementById('tab-' + tabName);
+        if (activeBtn) activeBtn.classList.add('active');
+
+        const formsSec = document.getElementById('formsSection');
+        const depSec = document.getElementById('depositTableSection');
+        const repSec = document.getElementById('repayTableSection');
+        const sumSec = document.getElementById('bottomSummarySection');
+
+        if (tabName === 'home') {
+            formsSec.classList.remove('hidden');
+            depSec.classList.remove('hidden');
+            repSec.classList.remove('hidden');
+            sumSec.classList.remove('hidden');
+        } else if (tabName === 'transactions') {
+            formsSec.classList.add('hidden');
+            depSec.classList.remove('hidden');
+            repSec.classList.remove('hidden');
+            sumSec.classList.add('hidden');
+        } else if (tabName === 'report') {
+            formsSec.classList.add('hidden');
+            depSec.classList.add('hidden');
+            repSec.classList.add('hidden');
+            sumSec.classList.remove('hidden');
+        }
+    }
+
+    function focusInput(id) {
+        switchTab('home');
+        const el = document.getElementById(id);
+        if (el) el.focus();
+    }
+
+    function openSettingsModal() {
+        document.getElementById('modalTitle').innerText = 'প্রারম্ভিক ক্যাশ ও ধার সেটিংস';
+        document.getElementById('modalBody').innerHTML = `
+            <div class="space-y-2">
+                <div>
+                    <label class="block font-bold mb-0.5">প্রারম্ভিক ক্যাশ (৳)</label>
+                    <input type="number" id="modalBaseCash" value="${appState.baseCash}" class="w-full px-2 py-1 border rounded text-xs">
+                </div>
+                <div>
+                    <label class="block font-bold mb-0.5">মোট ধার (৳)</label>
+                    <input type="number" id="modalInitialLoan" value="${appState.initialLoan}" class="w-full px-2 py-1 border rounded text-xs">
+                </div>
+                <div class="flex justify-between pt-2 border-t">
+                    <button onclick="resetAllData()" class="px-2 py-1 bg-red-100 text-red-700 rounded font-semibold text-[10px]">সব মুছুন</button>
+                    <div class="flex gap-1">
+                        <button onclick="closeModal()" class="px-2.5 py-1 bg-slate-200 rounded font-semibold text-[10px]">বন্ধ</button>
+                        <button onclick="saveSettings()" class="px-2.5 py-1 bg-blue-600 text-white rounded font-semibold text-[10px]">সেভ</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        openModal();
+    }
+
+    function saveSettings() {
+        const newCash = parseFloat(document.getElementById('modalBaseCash').value);
+        const newLoan = parseFloat(document.getElementById('modalInitialLoan').value);
+        if (!isNaN(newCash)) appState.baseCash = newCash;
+        if (!isNaN(newLoan)) appState.initialLoan = newLoan;
+        updateAllCalculations();
+        closeModal();
+    }
+
+    function resetAllData() {
+        appState = { baseCash: 0, initialLoan: 0, deposits: [], repayments: [] };
+        updateAllCalculations();
+        closeModal();
+    }
+
+    function showMonthlySummaryModal() {
+        const totalDeposit = appState.deposits.reduce((sum, item) => sum + Number(item.amount), 0);
+        const totalRepay = appState.repayments.reduce((sum, item) => sum + Number(item.amount), 0);
+        const currentTotalCash = appState.baseCash + totalDeposit;
+        const remainingLoan = Math.max(0, appState.initialLoan - totalRepay);
+
+        document.getElementById('modalTitle').innerText = 'মাসিক হিসাব বিবরণী';
+        document.getElementById('modalBody').innerHTML = `
+            <div class="space-y-2">
+                <div class="p-2 bg-blue-50 rounded border border-blue-200 space-y-1 text-[11px]">
+                    <div class="flex justify-between"><span>মোট জমা এন্ট্রি:</span> <b>${toBanglaDigit(appState.deposits.length)} টি</b></div>
+                    <div class="flex justify-between"><span>মোট পরিশোধ এন্ট্রি:</span> <b>${toBanglaDigit(appState.repayments.length)} টি</b></div>
+                    <hr class="border-blue-200">
+                    <div class="flex justify-between text-green-700"><span>ক্যাশ স্থিতি:</span> <b>${formatMoney(currentTotalCash)}</b></div>
+                    <div class="flex justify-between text-blue-700"><span>অবশিষ্ট ধার:</span> <b>${formatMoney(remainingLoan)}</b></div>
+                </div>
+                <div class="flex justify-end gap-1 pt-1">
+                    <button onclick="closeModal()" class="px-3 py-1 bg-slate-200 rounded font-semibold text-[10px]">ঠিক আছে</button>
+                </div>
+            </div>
+        `;
+        openModal();
+    }
+
+    function openModal() {
+        const modal = document.getElementById('customModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('customModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.innerText = text;
+        return div.innerHTML;
+    }
+</script>
+
+</body>
+</html>
